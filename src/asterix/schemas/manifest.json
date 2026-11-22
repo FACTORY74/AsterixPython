@@ -1,0 +1,774 @@
+{
+  "source": "https://zoranbosnjak.github.io/asterix-specs/specs.zip",
+  "revision": "5cf64b635424891b9f7e5d8fc51f6531e5790f89",
+  "archive_sha256": "19ec7ed4d6f8f65097291003d0a97d2fe6866009b601eec05fa00b90196d7d50",
+  "upstream_manifest": [
+    {
+      "category": "001",
+      "cats": [
+        "1.4",
+        "1.3",
+        "1.2"
+      ],
+      "refs": []
+    },
+    {
+      "category": "002",
+      "cats": [
+        "1.2",
+        "1.1",
+        "1.0"
+      ],
+      "refs": []
+    },
+    {
+      "category": "004",
+      "cats": [
+        "1.13",
+        "1.12"
+      ],
+      "refs": []
+    },
+    {
+      "category": "007",
+      "cats": [
+        "1.12"
+      ],
+      "refs": []
+    },
+    {
+      "category": "008",
+      "cats": [
+        "1.3",
+        "1.2"
+      ],
+      "refs": []
+    },
+    {
+      "category": "009",
+      "cats": [
+        "2.1"
+      ],
+      "refs": []
+    },
+    {
+      "category": "010",
+      "cats": [
+        "1.1"
+      ],
+      "refs": []
+    },
+    {
+      "category": "011",
+      "cats": [
+        "1.3",
+        "1.2"
+      ],
+      "refs": []
+    },
+    {
+      "category": "015",
+      "cats": [
+        "1.2",
+        "1.1",
+        "1.0"
+      ],
+      "refs": []
+    },
+    {
+      "category": "016",
+      "cats": [
+        "1.0"
+      ],
+      "refs": []
+    },
+    {
+      "category": "017",
+      "cats": [
+        "1.3"
+      ],
+      "refs": []
+    },
+    {
+      "category": "018",
+      "cats": [
+        "1.8",
+        "1.7"
+      ],
+      "refs": []
+    },
+    {
+      "category": "019",
+      "cats": [
+        "1.3"
+      ],
+      "refs": []
+    },
+    {
+      "category": "020",
+      "cats": [
+        "1.11",
+        "1.10",
+        "1.9"
+      ],
+      "refs": []
+    },
+    {
+      "category": "021",
+      "cats": [
+        "2.7",
+        "2.6",
+        "2.5",
+        "2.4",
+        "2.3",
+        "2.2",
+        "2.1",
+        "0.26",
+        "0.25",
+        "0.24",
+        "0.23"
+      ],
+      "refs": [
+        "1.5",
+        "1.4"
+      ]
+    },
+    {
+      "category": "023",
+      "cats": [
+        "1.3",
+        "1.2"
+      ],
+      "refs": []
+    },
+    {
+      "category": "025",
+      "cats": [
+        "1.6",
+        "1.5"
+      ],
+      "refs": []
+    },
+    {
+      "category": "032",
+      "cats": [
+        "1.2",
+        "1.1"
+      ],
+      "refs": []
+    },
+    {
+      "category": "034",
+      "cats": [
+        "1.29",
+        "1.28",
+        "1.27"
+      ],
+      "refs": []
+    },
+    {
+      "category": "048",
+      "cats": [
+        "1.32",
+        "1.31",
+        "1.30",
+        "1.29",
+        "1.28",
+        "1.27"
+      ],
+      "refs": [
+        "1.13",
+        "1.12",
+        "1.11"
+      ]
+    },
+    {
+      "category": "062",
+      "cats": [
+        "1.21",
+        "1.20",
+        "1.19",
+        "1.18",
+        "1.17",
+        "1.16"
+      ],
+      "refs": [
+        "1.3",
+        "1.2"
+      ]
+    },
+    {
+      "category": "063",
+      "cats": [
+        "1.7",
+        "1.6"
+      ],
+      "refs": []
+    },
+    {
+      "category": "065",
+      "cats": [
+        "1.6",
+        "1.5",
+        "1.4"
+      ],
+      "refs": []
+    },
+    {
+      "category": "150",
+      "cats": [
+        "3.0"
+      ],
+      "refs": []
+    },
+    {
+      "category": "205",
+      "cats": [
+        "1.0"
+      ],
+      "refs": []
+    },
+    {
+      "category": "240",
+      "cats": [
+        "1.3"
+      ],
+      "refs": []
+    },
+    {
+      "category": "247",
+      "cats": [
+        "1.3",
+        "1.2"
+      ],
+      "refs": []
+    }
+  ],
+  "definitions": [
+    {
+      "kind": "cat",
+      "category": 1,
+      "edition": "1.2",
+      "path": "cat001/cat/1.2.json.gz",
+      "sha256": "a0ee07d324cf8080ea9bdecce587e76dfb16676fd5c8203862dd8fdb27a7fbe6"
+    },
+    {
+      "kind": "cat",
+      "category": 1,
+      "edition": "1.3",
+      "path": "cat001/cat/1.3.json.gz",
+      "sha256": "08c5ce5d8aa34cb35551ed78097c2c28e160234056f39b1b12f3fe092bde01bb"
+    },
+    {
+      "kind": "cat",
+      "category": 1,
+      "edition": "1.4",
+      "path": "cat001/cat/1.4.json.gz",
+      "sha256": "bcceb43af2c52f4c2d2069ea295e0fdb76e4d50da803506f750fa315e33f0b94"
+    },
+    {
+      "kind": "cat",
+      "category": 2,
+      "edition": "1.0",
+      "path": "cat002/cat/1.0.json.gz",
+      "sha256": "d682f3b09d0a62c40cc89c45e12857044a17eaefa0ba6586db6b73c001f9fc39"
+    },
+    {
+      "kind": "cat",
+      "category": 2,
+      "edition": "1.1",
+      "path": "cat002/cat/1.1.json.gz",
+      "sha256": "76f6f3e8eee58576ee68a84390cff019c29a81ee1cede76ec8cb64b7f66dfe01"
+    },
+    {
+      "kind": "cat",
+      "category": 2,
+      "edition": "1.2",
+      "path": "cat002/cat/1.2.json.gz",
+      "sha256": "0dd62ac7a43df5c1d200bb77f689354d30b368df2ce5bac6ee5ac5761bc21cd8"
+    },
+    {
+      "kind": "cat",
+      "category": 4,
+      "edition": "1.12",
+      "path": "cat004/cat/1.12.json.gz",
+      "sha256": "b488f9cf22b5f1b0883e6855a1d8976634f32749047962e36385e5f22f1586c3"
+    },
+    {
+      "kind": "cat",
+      "category": 4,
+      "edition": "1.13",
+      "path": "cat004/cat/1.13.json.gz",
+      "sha256": "8d3d7ed37f5524b73971049736f644fa146dd115815bb338781594d405cf10f1"
+    },
+    {
+      "kind": "cat",
+      "category": 7,
+      "edition": "1.12",
+      "path": "cat007/cat/1.12.json.gz",
+      "sha256": "4661621a443224d0374001c672d9da701f22932df1879b8f6ebda7ff5fe01b27"
+    },
+    {
+      "kind": "cat",
+      "category": 8,
+      "edition": "1.2",
+      "path": "cat008/cat/1.2.json.gz",
+      "sha256": "b575637f0a7108da16f2bde7900d521045e51242ddaac8cc1d766e09ffe4812b"
+    },
+    {
+      "kind": "cat",
+      "category": 8,
+      "edition": "1.3",
+      "path": "cat008/cat/1.3.json.gz",
+      "sha256": "4f0ff1565635633938f919e8d71874f8d7beada6b3b2b042e0554df450228da4"
+    },
+    {
+      "kind": "cat",
+      "category": 9,
+      "edition": "2.1",
+      "path": "cat009/cat/2.1.json.gz",
+      "sha256": "4afe03d170be796c4ce99e7261549e5c0ce2db8ed4f7e89c2d5de980db94022e"
+    },
+    {
+      "kind": "cat",
+      "category": 10,
+      "edition": "1.1",
+      "path": "cat010/cat/1.1.json.gz",
+      "sha256": "8316c7b102c10721e7142a24349cbcad09d0b8c7d5b56c5e7b12c36a27d5f145"
+    },
+    {
+      "kind": "cat",
+      "category": 11,
+      "edition": "1.2",
+      "path": "cat011/cat/1.2.json.gz",
+      "sha256": "283185b2665766787cb4eb015ff114bc500d65db96fc8d2da6d26303c2df9777"
+    },
+    {
+      "kind": "cat",
+      "category": 11,
+      "edition": "1.3",
+      "path": "cat011/cat/1.3.json.gz",
+      "sha256": "9c0d728c7ff75e9109c890b6fbc27fee74e4c1cae0465c440ad8b6a76c84d40f"
+    },
+    {
+      "kind": "cat",
+      "category": 15,
+      "edition": "1.0",
+      "path": "cat015/cat/1.0.json.gz",
+      "sha256": "c4a4e77b7e2524098cc0636b741c2432dab1af5eaf72f6f487642e58f818e94c"
+    },
+    {
+      "kind": "cat",
+      "category": 15,
+      "edition": "1.1",
+      "path": "cat015/cat/1.1.json.gz",
+      "sha256": "a17304e293a35f2b2a3c12f4c89b83c72685c93d2599b3a229fd9e41c931fd72"
+    },
+    {
+      "kind": "cat",
+      "category": 15,
+      "edition": "1.2",
+      "path": "cat015/cat/1.2.json.gz",
+      "sha256": "b937cba1ffe8ab5b364244f8c04be2ea6e2d7f90b81908c312800db2ad9ed5cc"
+    },
+    {
+      "kind": "cat",
+      "category": 16,
+      "edition": "1.0",
+      "path": "cat016/cat/1.0.json.gz",
+      "sha256": "3a8e5365b8811e87afb02ff3cab0c429dbec923a725b85d826c11991c14a5510"
+    },
+    {
+      "kind": "cat",
+      "category": 17,
+      "edition": "1.3",
+      "path": "cat017/cat/1.3.json.gz",
+      "sha256": "243e05affca730f88ca02efc1dcda79051bfb4a8b3598f9362e107f3f1273847"
+    },
+    {
+      "kind": "cat",
+      "category": 18,
+      "edition": "1.7",
+      "path": "cat018/cat/1.7.json.gz",
+      "sha256": "b75bfd7767d0c6179b759a219172682d42da36021e64a5c861db1f7e9bd84c88"
+    },
+    {
+      "kind": "cat",
+      "category": 18,
+      "edition": "1.8",
+      "path": "cat018/cat/1.8.json.gz",
+      "sha256": "1519bc7f760e75ae039af45bc0802b7f41f0d1d9b2373c1407e356154ad24270"
+    },
+    {
+      "kind": "cat",
+      "category": 19,
+      "edition": "1.3",
+      "path": "cat019/cat/1.3.json.gz",
+      "sha256": "d38c43565835a15f3159a9f54d1111fe6b85bb30f29c4648aa0d877f83ea80c4"
+    },
+    {
+      "kind": "cat",
+      "category": 20,
+      "edition": "1.10",
+      "path": "cat020/cat/1.10.json.gz",
+      "sha256": "cac0f381cab4f21b26dd78c18d880b194774e7f097f5af42fd804dbd459d29f7"
+    },
+    {
+      "kind": "cat",
+      "category": 20,
+      "edition": "1.11",
+      "path": "cat020/cat/1.11.json.gz",
+      "sha256": "6f9876aa5169652869392ddc837145c641e518d0c0da8db0fd066f3e5540b465"
+    },
+    {
+      "kind": "cat",
+      "category": 20,
+      "edition": "1.9",
+      "path": "cat020/cat/1.9.json.gz",
+      "sha256": "2225ce5a6be0a244efc0ed2e328d69e3cc4895e9e45f6d58e16dcae59b5d12fc"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "0.23",
+      "path": "cat021/cat/0.23.json.gz",
+      "sha256": "cd18cc2e91b98afa52d5aceb06ae406c338a417a106f86bf251daf1fa523dcf1"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "0.24",
+      "path": "cat021/cat/0.24.json.gz",
+      "sha256": "e937ed639e345c01f39219164e9d25f3b9080e72d3d4cde2826fd307a8784877"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "0.25",
+      "path": "cat021/cat/0.25.json.gz",
+      "sha256": "dd4ad65fe9ad45723ae7fed435ef1618b105242ea7d409f8e934180eb478d369"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "0.26",
+      "path": "cat021/cat/0.26.json.gz",
+      "sha256": "439e25991cda2c560b9bd76110f0753e178b22c71742e6dc1283bdbc97e40db4"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "2.1",
+      "path": "cat021/cat/2.1.json.gz",
+      "sha256": "91dbb1786ff277ea5279758f9d72837419f39ac4ce3d247e9a45a56c01d2a0b3"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "2.2",
+      "path": "cat021/cat/2.2.json.gz",
+      "sha256": "8b2f5079d8a689789fb3cbeb7f1e8c2926f1a54beddf6f96bc916988b482426e"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "2.3",
+      "path": "cat021/cat/2.3.json.gz",
+      "sha256": "d0e22e12b7f3b8c967233ab82a80ec86f63f506b37cfeb296a774b52de1b86af"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "2.4",
+      "path": "cat021/cat/2.4.json.gz",
+      "sha256": "05baf755a0b188f52d0fe255295aa57e5f63949320e29426f095686f376aad41"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "2.5",
+      "path": "cat021/cat/2.5.json.gz",
+      "sha256": "2c74bc5371cf5c678e4e4f2049d2db7d5120c4d4c93bd9f2666dfca0623fce1d"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "2.6",
+      "path": "cat021/cat/2.6.json.gz",
+      "sha256": "3463d10dc69cb12eeea0df65738d1f15a193455bd84e5a7a4d64b4e6e6f2fe37"
+    },
+    {
+      "kind": "cat",
+      "category": 21,
+      "edition": "2.7",
+      "path": "cat021/cat/2.7.json.gz",
+      "sha256": "ce5b83627c01682a3974b3c23d1fab9b404a1f603607ff374aaa0dec95c06197"
+    },
+    {
+      "kind": "ref",
+      "category": 21,
+      "edition": "1.4",
+      "path": "cat021/ref/1.4.json.gz",
+      "sha256": "16042abf49846b273db292bf1923ae1a46fd26c1cf98df5e882aa12589d686f1"
+    },
+    {
+      "kind": "ref",
+      "category": 21,
+      "edition": "1.5",
+      "path": "cat021/ref/1.5.json.gz",
+      "sha256": "fe846687526d96624f6b4c34bfa3b5e3c3ed8c28516af2fa65aa56c6e9ac59e7"
+    },
+    {
+      "kind": "cat",
+      "category": 23,
+      "edition": "1.2",
+      "path": "cat023/cat/1.2.json.gz",
+      "sha256": "940bc6e6d0f35676e112ac115edca75fb1afee9e4444e256342a0026e383b6cb"
+    },
+    {
+      "kind": "cat",
+      "category": 23,
+      "edition": "1.3",
+      "path": "cat023/cat/1.3.json.gz",
+      "sha256": "6280f7a208d1112923c0b93537410f41d90c9638afb11530df046ef79dd7fb1d"
+    },
+    {
+      "kind": "cat",
+      "category": 25,
+      "edition": "1.5",
+      "path": "cat025/cat/1.5.json.gz",
+      "sha256": "0360a8a3c0f5efec39c5e27564710f15b3602819b7018291e3f696053f8ec292"
+    },
+    {
+      "kind": "cat",
+      "category": 25,
+      "edition": "1.6",
+      "path": "cat025/cat/1.6.json.gz",
+      "sha256": "c670bb71ed0f0d881bc260788aaff2cf6d2a15686ca534060a9a687d50c3ba4b"
+    },
+    {
+      "kind": "cat",
+      "category": 32,
+      "edition": "1.1",
+      "path": "cat032/cat/1.1.json.gz",
+      "sha256": "f2bb0e0e39d48686b10163f074ba3e6feafc902bc8595bc6bd3f07949136972e"
+    },
+    {
+      "kind": "cat",
+      "category": 32,
+      "edition": "1.2",
+      "path": "cat032/cat/1.2.json.gz",
+      "sha256": "a5533047994623160fce141166a35825a55d9e791ff7a1b9f0e8d0812fc2d842"
+    },
+    {
+      "kind": "cat",
+      "category": 34,
+      "edition": "1.27",
+      "path": "cat034/cat/1.27.json.gz",
+      "sha256": "3d822fafc22d4d77937eaea4e337267d45e1a1472fc06f92f99deb00c27f9844"
+    },
+    {
+      "kind": "cat",
+      "category": 34,
+      "edition": "1.28",
+      "path": "cat034/cat/1.28.json.gz",
+      "sha256": "1faec5545c38782a018bcdf09649f2ad4ec13c3838b959b9640624eb5666184b"
+    },
+    {
+      "kind": "cat",
+      "category": 34,
+      "edition": "1.29",
+      "path": "cat034/cat/1.29.json.gz",
+      "sha256": "98128efaa6f6aafc548ad1817f0ffed23d82cf5237c141b0191467b96c687454"
+    },
+    {
+      "kind": "cat",
+      "category": 48,
+      "edition": "1.27",
+      "path": "cat048/cat/1.27.json.gz",
+      "sha256": "83cd35b73c7c604cc33f2d96de138b8c34b141bded433c460e9d742a7ceb4fc3"
+    },
+    {
+      "kind": "cat",
+      "category": 48,
+      "edition": "1.28",
+      "path": "cat048/cat/1.28.json.gz",
+      "sha256": "b3d72b4776598d129d67eff91cbabab6c0bf7dcc9fdcd63ae93b160a2de9aa10"
+    },
+    {
+      "kind": "cat",
+      "category": 48,
+      "edition": "1.29",
+      "path": "cat048/cat/1.29.json.gz",
+      "sha256": "82e1890e7e966ecae3d9f99f9caa5c3b87db843373d241ccbb696354f432f199"
+    },
+    {
+      "kind": "cat",
+      "category": 48,
+      "edition": "1.30",
+      "path": "cat048/cat/1.30.json.gz",
+      "sha256": "dbd90b8abb9cc6b63b1ade49a952519992b8ebd292bf23702f16f83790853e36"
+    },
+    {
+      "kind": "cat",
+      "category": 48,
+      "edition": "1.31",
+      "path": "cat048/cat/1.31.json.gz",
+      "sha256": "032b1bfb53b2e5aea7ea6b2d37d4be05fc43dbacc65aad474285a5ef9837c086"
+    },
+    {
+      "kind": "cat",
+      "category": 48,
+      "edition": "1.32",
+      "path": "cat048/cat/1.32.json.gz",
+      "sha256": "8213fb307e645a3fcf191f39dc9141cbb042b4ebe47dee62ad1fb4ea28d2a330"
+    },
+    {
+      "kind": "ref",
+      "category": 48,
+      "edition": "1.11",
+      "path": "cat048/ref/1.11.json.gz",
+      "sha256": "e0804287de3f6157cdaa59269533d1a38543c8b5603794cc3bcbb60df1981341"
+    },
+    {
+      "kind": "ref",
+      "category": 48,
+      "edition": "1.12",
+      "path": "cat048/ref/1.12.json.gz",
+      "sha256": "edc6c8df50b7e4c59fc68359512ebeb46355ae1dc16f68fa9558155edbac0965"
+    },
+    {
+      "kind": "ref",
+      "category": 48,
+      "edition": "1.13",
+      "path": "cat048/ref/1.13.json.gz",
+      "sha256": "fec85c8b84c555f2c5d5c6da87c5157e74fbef9681fdad6b5358daa71ebf8330"
+    },
+    {
+      "kind": "cat",
+      "category": 62,
+      "edition": "1.16",
+      "path": "cat062/cat/1.16.json.gz",
+      "sha256": "b015b1f54a8cc66f7bb71d4ddc60eb6a59d0a43347fa7efd31d2740df3af62ad"
+    },
+    {
+      "kind": "cat",
+      "category": 62,
+      "edition": "1.17",
+      "path": "cat062/cat/1.17.json.gz",
+      "sha256": "19cb346c42c5a497da884a603e32914c846f3c85abdd1091eafcbf893ce123bf"
+    },
+    {
+      "kind": "cat",
+      "category": 62,
+      "edition": "1.18",
+      "path": "cat062/cat/1.18.json.gz",
+      "sha256": "78019f7215d91c10d6d1ab0722c467399b473960a83dbfe78115facb03955e23"
+    },
+    {
+      "kind": "cat",
+      "category": 62,
+      "edition": "1.19",
+      "path": "cat062/cat/1.19.json.gz",
+      "sha256": "51ae3fad28744d856fe8c7a91d6e3fbf9b60598c3456adf68d8029408f475462"
+    },
+    {
+      "kind": "cat",
+      "category": 62,
+      "edition": "1.20",
+      "path": "cat062/cat/1.20.json.gz",
+      "sha256": "574f8456bd2bf9140f7f166a68c02ac1cc50b52ad7cb1c9d8a604875df20a358"
+    },
+    {
+      "kind": "cat",
+      "category": 62,
+      "edition": "1.21",
+      "path": "cat062/cat/1.21.json.gz",
+      "sha256": "111d19109619d3b10e496866389d7592afc436a7c965c46e401f62962294b2b9"
+    },
+    {
+      "kind": "ref",
+      "category": 62,
+      "edition": "1.2",
+      "path": "cat062/ref/1.2.json.gz",
+      "sha256": "7ce7b50c416363d7907b377b642565660c1d21d7892f8def7dedbddd61ce5d05"
+    },
+    {
+      "kind": "ref",
+      "category": 62,
+      "edition": "1.3",
+      "path": "cat062/ref/1.3.json.gz",
+      "sha256": "dbb6200efcc7eae906c726b34b718e350d830ae216e8f910baf353ca44de9cd3"
+    },
+    {
+      "kind": "cat",
+      "category": 63,
+      "edition": "1.6",
+      "path": "cat063/cat/1.6.json.gz",
+      "sha256": "1cf4c034979e1c73888815f7cbbe2c9107c20f8b7594cbd9c39c6a6f7a2ce539"
+    },
+    {
+      "kind": "cat",
+      "category": 63,
+      "edition": "1.7",
+      "path": "cat063/cat/1.7.json.gz",
+      "sha256": "32d5516291e9d90cafae9fa033c1fbefb7bf37ec159b240ff247de25ae1db520"
+    },
+    {
+      "kind": "cat",
+      "category": 65,
+      "edition": "1.4",
+      "path": "cat065/cat/1.4.json.gz",
+      "sha256": "e171b5bf6bb6791c63717b471ccf4f4f65cf75d7d40e61fa99147f3b875bcb37"
+    },
+    {
+      "kind": "cat",
+      "category": 65,
+      "edition": "1.5",
+      "path": "cat065/cat/1.5.json.gz",
+      "sha256": "32d94e1313540dee0c33ea76ff10cd5f170ceceb25cc1420e5b8dc23e19f9aa2"
+    },
+    {
+      "kind": "cat",
+      "category": 65,
+      "edition": "1.6",
+      "path": "cat065/cat/1.6.json.gz",
+      "sha256": "0fdcfcf19919d1c4b389539067894b04e367b9f6326495fb046779b3cddabfb4"
+    },
+    {
+      "kind": "cat",
+      "category": 150,
+      "edition": "3.0",
+      "path": "cat150/cat/3.0.json.gz",
+      "sha256": "c1cfb77687b50aa123b1a862bfb9d295aecdbf582858201fd7588e95beafa10f"
+    },
+    {
+      "kind": "cat",
+      "category": 205,
+      "edition": "1.0",
+      "path": "cat205/cat/1.0.json.gz",
+      "sha256": "860a4ce9f90876809aec048a7532870dbf47ad60bc7a06dbf55de6896d10bbda"
+    },
+    {
+      "kind": "cat",
+      "category": 240,
+      "edition": "1.3",
+      "path": "cat240/cat/1.3.json.gz",
+      "sha256": "2dede37e3b46ab182b0bb6ac6e08d7d17c3be0548ce3107f2e480ba6c755349d"
+    },
+    {
+      "kind": "cat",
+      "category": 247,
+      "edition": "1.2",
+      "path": "cat247/cat/1.2.json.gz",
+      "sha256": "8ecfb9e8440215b0f247ca02d9d4297faccc4af4ad12ba58b80cff8d64c05997"
+    },
+    {
+      "kind": "cat",
+      "category": 247,
+      "edition": "1.3",
+      "path": "cat247/cat/1.3.json.gz",
+      "sha256": "c8ff7410cae7255c2620b16ab4ef000cb2398a2dd6ed266769e3a2902074e5ee"
+    }
+  ]
+}

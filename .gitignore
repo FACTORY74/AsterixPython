@@ -1,0 +1,18 @@
+# Downloaded reference material is reproducible and can be large.
+reference/eurocontrol/archives/*
+reference/eurocontrol/documents/*
+!reference/eurocontrol/archives/.gitkeep
+!reference/eurocontrol/documents/.gitkeep
+
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+tmp/
+dist/
+build/
+*.egg-info/
+
