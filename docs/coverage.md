@@ -70,7 +70,8 @@ basic category.
 - **Schema smoke**: definition loads and generated zero-value UAP item vectors
   round-trip. This is the current baseline for every implemented definition.
 - **Wire vector**: known bytes decode to expected values and re-encode exactly.
-  CAT048 1.32 and CAT062 1.21 currently have such tests.
+  CAT048 1.32 and CAT062 1.21 currently have such tests in
+  `tests/test_codec.py` and `tests/test_wire_vectors.py`.
 - **Operational capture**: independently produced captures and boundary cases
   have been checked. No category has this label yet.
 

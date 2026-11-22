@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 from fractions import Fraction
-from typing import Any
+from typing import Any, cast
 
 from .context import DecodeContext, EncodeContext, ValidationMode
 from .cursor import BitCursor, BitWriter, ByteCursor
@@ -53,29 +53,33 @@ def _content_value(node: Mapping[str, Any], raw: int, bits: int) -> ElementValue
     contents = node.get("contents")
     if tag == "ContentRaw":
         return ElementValue(raw=raw, value=raw)
+    if contents is None:
+        raise SchemaError(f"content tag {tag!r} has no contents")
     if tag == "ContentTable":
         table = {int(key): str(label) for key, label in contents}
         return ElementValue(raw=raw, value=raw, label=table.get(raw))
     if tag == "ContentInteger":
-        value = _signed(raw, bits, contents["signedness"])
-        return ElementValue(raw=raw, value=value)
+        decoded_value: Any = _signed(raw, bits, contents["signedness"])
+        return ElementValue(raw=raw, value=decoded_value)
     if tag == "ContentQuantity":
         integer = _signed(raw, bits, contents["signedness"])
-        value = integer * _numeric(contents["lsb"])
-        return ElementValue(raw=raw, value=value, unit=contents.get("unit"))
+        decoded_value = integer * _numeric(contents["lsb"])
+        return ElementValue(raw=raw, value=decoded_value, unit=contents.get("unit"))
     if tag == "ContentString":
         string_tag = contents["tag"]
         if string_tag == "StringAscii":
             size = (bits + 7) // 8
-            value = raw.to_bytes(size, "big").decode("ascii", errors="replace").rstrip("\x00 ")
+            decoded_value = (
+                raw.to_bytes(size, "big").decode("ascii", errors="replace").rstrip("\x00 ")
+            )
         elif string_tag == "StringICAO":
             chars = [_icao_character((raw >> shift) & 0x3F) for shift in range(bits - 6, -1, -6)]
-            value = "".join(chars).rstrip()
+            decoded_value = "".join(chars).rstrip()
         elif string_tag == "StringOctal":
-            value = format(raw, f"0{(bits + 2) // 3}o")
+            decoded_value = format(raw, f"0{(bits + 2) // 3}o")
         else:
             raise SchemaError(f"unsupported string tag {string_tag!r}")
-        return ElementValue(raw=raw, value=value)
+        return ElementValue(raw=raw, value=decoded_value)
     if tag in ("ContentBds", "BdsAt", "BdsWithAddress"):
         return ElementValue(raw=raw, value=raw.to_bytes((bits + 7) // 8, "big"))
     raise SchemaError(f"unsupported content tag {tag!r}")
@@ -86,6 +90,8 @@ def _static_bits(node: Mapping[str, Any] | None) -> int:
         return 1
     tag = node.get("tag")
     contents = node.get("contents")
+    if contents is None:
+        raise SchemaError(f"fixed-layout tag {tag!r} has no contents")
     if tag == "ContextFree":
         return _static_bits(contents)
     if tag == "Item":
@@ -95,7 +101,10 @@ def _static_bits(node: Mapping[str, Any] | None) -> int:
     if tag == "Spare":
         return int(contents)
     if tag == "Group":
-        return sum(_static_bits(child) for child in contents)
+        total = 0
+        for child in contents:
+            total += _static_bits(child)
+        return total
     raise SchemaError(f"{tag!r} is not fixed length")
 
 
@@ -181,6 +190,8 @@ class _VariationDecoder:
             return None
         tag = node.get("tag")
         contents = node.get("contents")
+        if contents is None:
+            raise SchemaError(f"fixed-layout tag {tag!r} has no contents")
         if tag == "ContextFree":
             return self._decode_bits(contents, bits, state, path)
         if tag == "Dependent":
@@ -436,6 +447,8 @@ def _unsigned_value(
         if isinstance(value, bytes):
             return int.from_bytes(value, "big")
         return int(value)
+    if contents is None:
+        raise EncodeError(f"content tag {tag!r} has no contents")
     if tag == "ContentTable":
         if isinstance(value, str):
             matches = [int(raw) for raw, label in contents if str(label) == value]
@@ -526,6 +539,8 @@ class _VariationEncoder:
             return
         tag = node.get("tag")
         contents = node.get("contents")
+        if contents is None:
+            raise EncodeError(f"fixed-layout tag {tag!r} has no contents")
         if tag == "ContextFree":
             self._encode_bits(contents, value, writer, path)
             return
@@ -562,7 +577,8 @@ class _VariationEncoder:
                 rule = _VariationDecoder(
                     DecodeContext(), self.registry, self.category, self.edition
                 )._select_dependent(rule["contents"], self.state)
-            raw = _unsigned_value(value, rule, size, self.context.validation)
+            validation = cast(ValidationMode, self.context.validation)
+            raw = _unsigned_value(value, rule, size, validation)
             if raw < 0 or raw >= 1 << size:
                 raise EncodeError(f"value {value!r} does not fit {size} bits at {'/'.join(path)}")
             writer.write(raw, size)

@@ -144,7 +144,7 @@ class SchemaRegistry:
                 raise SchemaError(f"unsupported root tag in {key}")
             contents = document["contents"]
             if kind == "ref":
-                catalogue = MappingProxyType({})
+                catalogue: Mapping[str, Mapping[str, Any]] = MappingProxyType({})
                 uap = _deep_freeze({"tag": "Uap", "contents": contents.get("items", ())})
             else:
                 catalogue = MappingProxyType(

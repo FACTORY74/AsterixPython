@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import os
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
@@ -111,7 +112,7 @@ async def receive() -> None:
         try:
             async for payload in datagrams(GROUP, PORT):
                 if not state.active:
-                    break
+                    break  # type: ignore[unreachable]  # changed concurrently by API task
                 for message in decoder.decode_datagram(payload):
                     for event in normalise(message):
                         if isinstance(event, (TrackUpdate, TrackTermination)):
@@ -125,7 +126,7 @@ async def receive() -> None:
 
 
 @asynccontextmanager
-async def lifespan(_app: FastAPI):
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     task = asyncio.create_task(receive(), name="asterix-receiver")
     try:
         yield

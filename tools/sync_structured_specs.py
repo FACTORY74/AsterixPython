@@ -131,7 +131,13 @@ def main() -> int:
                 }
             )
 
-    entries.sort(key=lambda item: (int(item["category"]), str(item["kind"]), str(item["edition"])))
+    entries.sort(
+        key=lambda item: (
+            int(str(item["category"])),
+            str(item["kind"]),
+            str(item["edition"]),
+        )
+    )
     manifest = {
         "source": ARCHIVE_URL,
         "revision": revision,

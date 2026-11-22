@@ -12,7 +12,7 @@ from asterix import (
     TruncatedDataError,
     decode_message,
 )
-from asterix.codec import _RecordState, _VariationDecoder, _VariationEncoder
+from asterix.codec import _read_fspec, _RecordState, _VariationDecoder, _VariationEncoder
 from asterix.cursor import ByteCursor
 from asterix.errors import DecodeError
 from asterix.json import to_jsonable
@@ -196,6 +196,15 @@ def test_reserved_expansion_and_multi_octet_fspec_vector() -> None:
     assert item.value == {"edition": "1.13", "fspec": b"\x00", "items": {}}
 
 
+def test_cat062_data_source_identifier_known_wire() -> None:
+    wire = bytes.fromhex("3e0006800102")
+    message = decode_message(wire, context=DecodeContext(editions={62: "1.21"}))
+    item = message.records[0].by_id("I062/010")
+    assert item is not None
+    assert item.value["SAC"].value == 1
+    assert item.value["SIC"].value == 2
+
+
 def test_malformed_nested_structures_are_bounded() -> None:
     explicit = {"tag": "Explicit", "contents": {"tag": "SpecialPurpose"}}
     with pytest.raises(TruncatedDataError):
@@ -210,6 +219,19 @@ def test_malformed_nested_structures_are_bounded() -> None:
     }
     with pytest.raises(DecodeError, match="repetition count"):
         _decode(repetitive, b"\x02", limits=Limits(max_repetitions=1))
+
+    fx_repetitive = {
+        "tag": "Repetitive",
+        "contents": {
+            "type": {"tag": "RepetitiveFx"},
+            "variation": _element(7, {"tag": "ContentRaw"}),
+        },
+    }
+    with pytest.raises(TruncatedDataError):
+        _decode(fx_repetitive, b"\x01")
+
+    with pytest.raises(DecodeError, match="FSPEC exceeds"):
+        _read_fspec(ByteCursor.from_bytes(b"\x01\x01"), limit=2)
 
 
 def test_to_jsonable_preserves_exact_values() -> None:
