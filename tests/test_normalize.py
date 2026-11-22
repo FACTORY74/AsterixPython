@@ -1,7 +1,9 @@
 from datetime import UTC, datetime
 
+import pytest
+
 from asterix import DecodeContext, SchemaRegistry, decode_message, encode_record
-from asterix.normalize import NormalisationContext, TrackUpdate, normalise
+from asterix.normalize import NormalisationContext, TrackTermination, TrackUpdate, normalise
 
 
 def test_cat062_normalises_to_track_update() -> None:
@@ -51,3 +53,58 @@ def test_non_surveillance_category_produces_no_events() -> None:
     )
 
     assert list(normalise(message)) == []
+
+
+@pytest.mark.parametrize(
+    ("category", "edition", "items", "expected_id"),
+    [
+        (
+            48,
+            "1.32",
+            {
+                "I048/140": 3600,
+                "I048/161": {"TRN": 1234},
+                "I048/170": [
+                    {"CNF": 0, "RAD": 0, "DOU": 0, "MAH": 0, "CDM": 0},
+                    {"TRE": 1, "GHO": 0, "SUP": 0, "TCC": 0},
+                ],
+            },
+            "048:track:4D2",
+        ),
+        (
+            62,
+            "1.21",
+            {
+                "I062/040": 1234,
+                "I062/070": 3600,
+                "I062/080": [
+                    {"MON": 0, "SPI": 0, "MRH": 0, "SRC": 0, "CNF": 0},
+                    {
+                        "SIM": 0,
+                        "TSE": 1,
+                        "TSB": 0,
+                        "FPC": 0,
+                        "AFF": 0,
+                        "STP": 0,
+                        "KOS": 0,
+                    },
+                ],
+            },
+            "062:track:4D2",
+        ),
+    ],
+)
+def test_track_termination_does_not_require_position(
+    category: int, edition: str, items: dict[str, object], expected_id: str
+) -> None:
+    wire = encode_record(category=category, edition=edition, items=items)
+    message = decode_message(wire, context=DecodeContext(editions={category: edition}))
+    received = datetime(2026, 1, 2, 1, 2, tzinfo=UTC)
+
+    events = list(normalise(message, NormalisationContext(received_at=received)))
+
+    assert len(events) == 1
+    termination = events[0]
+    assert isinstance(termination, TrackTermination)
+    assert termination.track_id == expected_id
+    assert termination.observed_at == datetime(2026, 1, 2, 1, 0, tzinfo=UTC)

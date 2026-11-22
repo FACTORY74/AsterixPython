@@ -186,6 +186,15 @@ def _altitude(message: AsterixMessage, record: DataRecord) -> float | None:
     return None
 
 
+def _is_termination(message: AsterixMessage, record: DataRecord) -> bool:
+    indicator = {48: ("170", "TRE"), 62: ("080", "TSE")}.get(message.category)
+    if indicator is None:
+        return False
+    item, leaf = indicator
+    value = _item_value(record, item, leaf)
+    return isinstance(value, (int, Fraction)) and int(value) == 1
+
+
 def normalise(
     message: AsterixMessage, context: NormalisationContext | None = None
 ) -> Iterator[TrackUpdate | TrackTermination]:
@@ -203,11 +212,19 @@ def normalise(
     for index, record in enumerate(message.records):
         sac, sic = _source(record)
         provenance = Provenance(message.category, message.edition, index, sac, sic)
-        position = _position(message, record, provenance, context.cartesian_projector)
-        if position is None:
-            continue
         track_id = _identity(message, record)
         if track_id is None:
+            continue
+        observed_at = _observed_at(_item_value(record, time_item), received_at)
+        if _is_termination(message, record):
+            yield TrackTermination(
+                track_id=track_id,
+                observed_at=observed_at,
+                provenance=provenance,
+            )
+            continue
+        position = _position(message, record, provenance, context.cartesian_projector)
+        if position is None:
             continue
         speed, heading = _velocity(message, record)
         callsign_value = _item_value(record, callsign_item, "CHR")
@@ -218,7 +235,7 @@ def normalise(
             track_id=track_id,
             latitude_degrees=position[0],
             longitude_degrees=position[1],
-            observed_at=_observed_at(_item_value(record, time_item), received_at),
+            observed_at=observed_at,
             provenance=provenance,
             callsign=callsign or None,
             altitude_feet=_altitude(message, record),

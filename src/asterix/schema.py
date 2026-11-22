@@ -16,6 +16,14 @@ from typing import Any
 from .errors import EditionResolutionError, SchemaError, SchemaNotFoundError, UapResolutionError
 
 
+def _deep_freeze(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return MappingProxyType({str(key): _deep_freeze(item) for key, item in value.items()})
+    if isinstance(value, list):
+        return tuple(_deep_freeze(item) for item in value)
+    return value
+
+
 @dataclass(frozen=True, slots=True)
 class SchemaKey:
     kind: str
@@ -131,14 +139,18 @@ class SchemaRegistry:
             raw_bytes = gzip.decompress(compressed)
             if hashlib.sha256(raw_bytes).hexdigest() != entry["sha256"]:
                 raise SchemaError(f"schema checksum mismatch for {key}")
-            document = json.loads(raw_bytes)
+            document = _deep_freeze(json.loads(raw_bytes))
             if document.get("tag") not in ("AsterixBasic", "AsterixExpansion"):
                 raise SchemaError(f"unsupported root tag in {key}")
             contents = document["contents"]
-            catalogue = {str(item["name"]): item for item in contents["catalogue"]}
-            uap = contents.get("uap")
             if kind == "ref":
-                uap = {"tag": "Uap", "contents": contents.get("items", [])}
+                catalogue = MappingProxyType({})
+                uap = _deep_freeze({"tag": "Uap", "contents": contents.get("items", ())})
+            else:
+                catalogue = MappingProxyType(
+                    {str(item["name"]): item for item in contents["catalogue"]}
+                )
+                uap = contents.get("uap")
             schema = CategorySchema(
                 key=key,
                 title=str(contents.get("title", "")),
@@ -149,9 +161,9 @@ class SchemaRegistry:
                 )
                 if contents.get("date")
                 else None,
-                catalogue=MappingProxyType(catalogue),
+                catalogue=catalogue,
                 uap_definition=uap,
-                raw=MappingProxyType(document),
+                raw=document,
             )
             self._cache[key] = schema
             return schema

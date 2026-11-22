@@ -16,9 +16,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-
 
 BASE_URL = "https://www.eurocontrol.int"
 SEARCH_PATH = "/library/search"
@@ -242,7 +241,7 @@ def main() -> int:
 
     catalog = {
         "source": search_url(),
-        "retrieved_at": datetime.now(timezone.utc).isoformat(),
+        "retrieved_at": datetime.now(UTC).isoformat(),
         "publication_count": len(records),
         "publications": records,
     }

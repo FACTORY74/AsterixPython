@@ -128,10 +128,10 @@ For a UDP payload that may contain one or more complete ASTERIX messages, use
 messages = decoder.decode_datagram(payload)
 ```
 
-The current validation modes are still incomplete; do not assume that
-`compatible` or `inspect` converts every standards violation into a diagnostic.
-Framing, truncation, schema-resolution, and resource-limit errors may still be
-raised.
+Validation policy applies to the recoverable standards conditions recognized by
+the codec. Framing, truncation, schema-resolution, and resource-limit errors
+remain fatal in every mode. See the validation table in `architecture.md` for
+the precise behavior of `strict`, `compatible`, and `inspect`.
 
 ## Select a UAP or REF edition
 
@@ -175,8 +175,8 @@ print(schema.title)
 print(schema.uap_names)
 ```
 
-Treat schema objects as read-only. Deep immutability is tracked as an open bug
-in `TODO.md`.
+Schema objects are recursively immutable and safe to share for read-only
+introspection. A registry lazily caches loaded definitions.
 
 ## Convert a message to JSON
 
@@ -215,8 +215,11 @@ for event in normalise(
 ```
 
 CAT048 Cartesian positions require a deployment-specific
-`cartesian_projector`. Track-termination generation is not yet implemented; a
-long-running application must currently apply its own stale-track expiry.
+`cartesian_projector`. CAT048 `TRE` and CAT062 `TSE` last-report indicators
+produce `TrackTermination` events even when the terminating record has no
+position. CAT021 has no equivalent supported indicator, so long-running
+applications should also expire stale tracks. The Kody example defaults to 30
+seconds and accepts `ASTERIX_TRACK_EXPIRY_SECONDS` as an environment setting.
 
 ## Common exceptions
 

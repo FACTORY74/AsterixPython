@@ -365,6 +365,25 @@ These policy names do not weaken memory-safety rules: all modes enforce hard
 boundaries and resource limits. They differ only in whether a standards defect
 stops semantic decoding, becomes a diagnostic, or leaves opaque raw content.
 
+The current codec applies the following policy table. Conditions not listed
+here are structural/schema failures rather than recoverable validation issues
+and remain fatal in every mode.
+
+| Condition | Strict | Compatible | Inspect |
+| --- | --- | --- | --- |
+| Non-zero spare bits | Raise `ValidationError` | Decode and warn | Decode and warn |
+| FSPEC selects a UAP spare | Raise `ValidationError` | Warn and continue | Warn and continue |
+| Undefined table value while decoding | Raise `ValidationError` | Preserve raw value and warn | Preserve raw value and warn |
+| Extended item exceeds the schema | Raise `ValidationError` | Preserve unknown extent and warn | Preserve unknown extent and warn |
+| Compound FSPEC selects a spare | Raise `ValidationError` | Warn and continue | Warn and continue |
+| FRN exceeds the selected UAP | Raise `ValidationError` | Preserve remaining record bytes as `UnknownTail` and warn | Preserve remaining record bytes as `UnknownTail` and warn |
+| Undefined numeric table value while encoding | Raise `EncodeError` | Encode the supplied raw value | Encode the supplied raw value |
+
+An unselected REF edition is not a standards violation: its explicit field is
+retained as opaque bytes. Invalid lengths, truncation, unterminated FSPEC/FX,
+schema inconsistencies, and configured resource-limit violations are unsafe to
+continue and therefore raise in all modes.
+
 Exceptions and diagnostics contain category, edition, record index, FRN/item,
 byte offset, bit range, raw value, rule, and severity. Network receivers catch
 per-message failures so one malformed message does not terminate a service.

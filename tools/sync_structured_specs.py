@@ -23,6 +23,28 @@ LICENSE_URL = "https://raw.githubusercontent.com/zoranbosnjak/asterix-specs/mast
 USER_AGENT = "Asterix-schema-sync/1.0"
 
 
+def check_packaged(destination: Path) -> None:
+    manifest = json.loads((destination / "manifest.json").read_text(encoding="utf-8"))
+    expected_paths: set[Path] = set()
+    for entry in manifest["definitions"]:
+        relative = Path(str(entry["path"]))
+        expected_paths.add(relative)
+        packaged = destination / relative
+        raw = gzip.decompress(packaged.read_bytes())
+        if hashlib.sha256(raw).hexdigest() != entry["sha256"]:
+            raise ValueError(f"schema checksum mismatch: {relative.as_posix()}")
+        output = io.BytesIO()
+        with gzip.GzipFile(filename="", mode="wb", fileobj=output, mtime=0) as compressed:
+            compressed.write(raw)
+        if output.getvalue() != packaged.read_bytes():
+            raise ValueError(f"schema gzip is not reproducible: {relative.as_posix()}")
+    actual_paths = {path.relative_to(destination) for path in destination.rglob("*.json.gz")}
+    if actual_paths != expected_paths:
+        missing = sorted(path.as_posix() for path in expected_paths - actual_paths)
+        unexpected = sorted(path.as_posix() for path in actual_paths - expected_paths)
+        raise ValueError(f"schema file set differs: missing={missing}, unexpected={unexpected}")
+
+
 def fetch(url: str) -> bytes:
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     try:
@@ -63,10 +85,18 @@ def definition_key(path: PurePosixPath) -> tuple[str, int, str] | None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path, help="use an existing specs.zip")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="verify packaged checksums, file set, and deterministic compression",
+    )
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parents[1]
     destination = root / "src" / "asterix" / "schemas"
+    if args.check:
+        check_packaged(destination)
+        return 0
     destination.mkdir(parents=True, exist_ok=True)
     for stale_definition in destination.rglob("*.json.gz"):
         stale_definition.unlink()

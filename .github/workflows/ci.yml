@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.15"
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          enable-cache: true
+      - name: Install locked dependencies
+        run: uv sync --locked --extra dev --extra kody
+      - name: Lint
+        run: uv run ruff check .
+      - name: Type check
+        run: uv run mypy
+      - name: Test with coverage
+        run: uv run pytest --cov --cov-report=term-missing
+      - name: Verify generated schemas
+        run: uv run python tools/sync_structured_specs.py --check
+      - name: Build distributions
+        run: uv build --no-sources
+      - name: Verify installed wheel
+        run: uv run python tools/verify_wheel.py
+      - name: Check generated worktree
+        run: git diff --exit-code

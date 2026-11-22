@@ -49,6 +49,8 @@ def _zero(node: Mapping[str, Any] | None) -> Any:
     if tag == "Explicit":
         return b""
     if tag == "Repetitive":
+        if contents["type"]["tag"] == "RepetitiveFx":
+            return [_zero(contents["variation"])]
         return []
     if tag == "Compound":
         for child in contents:
@@ -80,6 +82,29 @@ def test_every_definition_loads_and_references_valid_uap_items(registry: SchemaR
                     continue
                 name = str(entry["contents"])
                 assert name in schema.catalogue or name in {"SP", "SPF", "RE", "REF"}
+
+    for key in registry.keys("ref"):
+        schema = registry.get(key.category, key.edition, kind="ref")
+        assert schema.key == key
+        assert schema.uap_names == ("standard",)
+
+
+def test_loaded_schema_is_deeply_immutable(registry: SchemaRegistry) -> None:
+    schema = registry.get(48, "1.32")
+
+    with pytest.raises(TypeError):
+        schema.catalogue["010"]["rule"]["tag"] = "Broken"
+    with pytest.raises(TypeError):
+        schema.raw["contents"]["catalogue"][0]["title"] = "Broken"
+    with pytest.raises(AttributeError):
+        schema.uap_definition["contents"].append(None)
+
+    # Failed mutation attempts must not affect the cached schema instance.
+    assert registry.get(48, "1.32").catalogue["010"]["rule"]["tag"] == "ContextFree"
+
+    ref_schema = registry.get(48, "1.13", kind="ref")
+    with pytest.raises(TypeError):
+        ref_schema.uap_definition["tag"] = "Broken"
 
 
 def test_each_uap_item_zero_round_trip(registry: SchemaRegistry) -> None:

@@ -9,9 +9,10 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import os
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from fastapi import FastAPI
@@ -25,6 +26,7 @@ from examples.receive_udp import datagrams
 GROUP = "239.1.2.3"
 PORT = 8600
 EDITIONS = {21: "2.7", 48: "1.32", 62: "1.21"}
+TRACK_EXPIRY_SECONDS = float(os.getenv("ASTERIX_TRACK_EXPIRY_SECONDS", "30"))
 
 
 class ActivityRequest(BaseModel):
@@ -37,6 +39,9 @@ class DisplayState:
     revision_number: int = 0
     active: bool = True
     last_error: str | None = None
+    stale_after: timedelta = field(
+        default_factory=lambda: timedelta(seconds=TRACK_EXPIRY_SECONDS)
+    )
 
     def apply(self, event: TrackUpdate | TrackTermination) -> None:
         if isinstance(event, TrackTermination):
@@ -46,6 +51,17 @@ class DisplayState:
             changed = previous != event
             self.tracks[event.track_id] = event
         if changed:
+            self.revision_number += 1
+
+    def expire(self, now: datetime) -> None:
+        stale = [
+            track_id
+            for track_id, track in self.tracks.items()
+            if now - track.observed_at > self.stale_after
+        ]
+        for track_id in stale:
+            del self.tracks[track_id]
+        if stale:
             self.revision_number += 1
 
     @property
@@ -146,13 +162,15 @@ def manifest() -> dict[str, Any]:
 
 @app.get("/api/data")
 def data() -> dict[str, Any]:
+    now = datetime.now(UTC)
+    state.expire(now)
     return {
         "type": "FeatureCollection",
         "revision": state.revision,
         "features": [track_feature(track) for track in state.tracks.values()],
         "source": {
             "lastError": state.last_error,
-            "generatedAt": datetime.now(UTC).isoformat(),
+            "generatedAt": now.isoformat(),
         },
     }
 

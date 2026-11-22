@@ -120,6 +120,29 @@ class _VariationDecoder:
         self.category = category
         self.edition = edition
 
+    def validation_issue(
+        self,
+        state: _RecordState,
+        code: str,
+        message: str,
+        *,
+        frn: int | None = None,
+        item_id: str | None = None,
+    ) -> None:
+        if self.context.validation is ValidationMode.STRICT:
+            raise ValidationError(message)
+        state.diagnostics.append(
+            Diagnostic(
+                code,
+                message,
+                Severity.WARNING,
+                category=state.category,
+                edition=state.edition,
+                frn=frn,
+                item_id=item_id,
+            )
+        )
+
     def decode(
         self,
         node: Mapping[str, Any],
@@ -171,14 +194,10 @@ class _VariationDecoder:
         if tag == "Spare":
             raw = bits.read(int(contents))
             if raw:
-                state.diagnostics.append(
-                    Diagnostic(
-                        "nonzero-spare",
-                        f"spare bits at {'/'.join(path)} are non-zero",
-                        Severity.WARNING,
-                        category=state.category,
-                        edition=state.edition,
-                    )
+                self.validation_issue(
+                    state,
+                    "nonzero-spare",
+                    f"spare bits at {'/'.join(path)} are non-zero",
                 )
             return None
         if tag == "Group":
@@ -197,6 +216,12 @@ class _VariationDecoder:
             elif rule.get("tag") == "Dependent":
                 rule = self._select_dependent(rule["contents"], state)
             value = _content_value(rule, raw, size)
+            if rule.get("tag") == "ContentTable" and value.label is None:
+                self.validation_issue(
+                    state,
+                    "unknown-table-value",
+                    f"value {raw} at {'/'.join(path)} is not defined by its table",
+                )
             state.values[path] = value
             return value
         raise SchemaError(f"unsupported fixed-layout tag {tag!r} at {'/'.join(path)}")
@@ -253,6 +278,11 @@ class _VariationDecoder:
             octets = cursor.take(segment_size)
             extension = bool(octets[-1] & 1)
             if segment is None:
+                self.validation_issue(
+                    state,
+                    "unknown-extension",
+                    f"schema has no extension {index + 1} at {'/'.join(path)}",
+                )
                 result.append({"_unknown_extension": octets})
             else:
                 bit_cursor = BitCursor(octets)
@@ -331,14 +361,21 @@ class _VariationDecoder:
         if repeat_type["tag"] == "RepetitiveRegular":
             count = cursor.uint(int(repeat_type["contents"]["byteSize"]))
         elif repeat_type["tag"] == "RepetitiveFx":
-            count = 0
-            for _ in range(self.context.limits.max_fx_octets):
-                octet = cursor.u8()
-                count = (count << 7) | (octet >> 1)
-                if not octet & 1:
-                    break
-            else:
-                raise DecodeError("unterminated FX repetition indicator")
+            variation = contents["variation"]
+            variation_bits = _static_bits(variation)
+            extent_bits = variation_bits + 1
+            if extent_bits % 8:
+                raise SchemaError(f"FX repetition at {'/'.join(path)} is not octet aligned")
+            values: list[Any] = []
+            while True:
+                if len(values) >= self.context.limits.max_repetitions:
+                    raise DecodeError("FX repetition count exceeds limit")
+                bits = BitCursor(cursor.take(extent_bits // 8))
+                values.append(
+                    self._decode_bits(variation, bits, state, (*path, str(len(values))))
+                )
+                if not bits.read(1):
+                    return values
         else:
             raise SchemaError(f"unsupported repetition type {repeat_type['tag']!r}")
         if count > self.context.limits.max_repetitions:
@@ -363,10 +400,11 @@ class _VariationDecoder:
                 raise DecodeError(f"unknown compound subitem {frn} at {'/'.join(path)}")
             child = children[frn - 1]
             if child is None:
-                state.diagnostics.append(
-                    Diagnostic(
-                        "compound-spare", f"compound spare subitem {frn} is set", Severity.WARNING
-                    )
+                self.validation_issue(
+                    state,
+                    "compound-spare",
+                    f"compound spare subitem {frn} is set at {'/'.join(path)}",
+                    frn=frn,
                 )
                 continue
             child = _unwrap_item(child)
@@ -385,7 +423,9 @@ def _mapping_value(values: Mapping[str, Any], name: str) -> Any:
     raise EncodeError(f"missing value for element {name}")
 
 
-def _unsigned_value(value: Any, rule: Mapping[str, Any], bits: int) -> int:
+def _unsigned_value(
+    value: Any, rule: Mapping[str, Any], bits: int, validation: ValidationMode
+) -> int:
     if isinstance(value, Mapping) and len(value) == 1:
         value = next(iter(value.values()))
     if isinstance(value, ElementValue):
@@ -402,7 +442,12 @@ def _unsigned_value(value: Any, rule: Mapping[str, Any], bits: int) -> int:
             if len(matches) != 1:
                 raise EncodeError(f"table label {value!r} is not unique or not defined")
             return matches[0]
-        return int(value)
+        raw = int(value)
+        if validation is ValidationMode.STRICT and raw not in {
+            int(table_raw) for table_raw, _label in contents
+        }:
+            raise EncodeError(f"table value {raw} is not defined")
+        return raw
     if tag in ("ContentInteger", "ContentQuantity"):
         signedness = contents["signedness"]
         numeric = Fraction(value)
@@ -517,7 +562,7 @@ class _VariationEncoder:
                 rule = _VariationDecoder(
                     DecodeContext(), self.registry, self.category, self.edition
                 )._select_dependent(rule["contents"], self.state)
-            raw = _unsigned_value(value, rule, size)
+            raw = _unsigned_value(value, rule, size, self.context.validation)
             if raw < 0 or raw >= 1 << size:
                 raise EncodeError(f"value {value!r} does not fit {size} bits at {'/'.join(path)}")
             writer.write(raw, size)
@@ -585,14 +630,19 @@ class _VariationEncoder:
             except OverflowError as error:
                 raise EncodeError("repetition count does not fit REP field") from error
         elif repeat_type["tag"] == "RepetitiveFx":
-            chunks = [len(values) & 0x7F]
-            remaining = len(values) >> 7
-            while remaining:
-                chunks.append(remaining & 0x7F)
-                remaining >>= 7
-            prefix = bytes(
-                (chunk << 1) | (index > 0) for index, chunk in enumerate(reversed(chunks))
-            )
+            if not values:
+                raise EncodeError("FX repetition requires at least one value")
+            variation = contents["variation"]
+            variation_bits = _static_bits(variation)
+            if (variation_bits + 1) % 8:
+                raise SchemaError(f"FX repetition at {'/'.join(path)} is not octet aligned")
+            output = bytearray()
+            for index, item in enumerate(values):
+                writer = BitWriter()
+                self._encode_bits(variation, item, writer, (*path, str(index)))
+                writer.write(1 if index < len(values) - 1 else 0, 1)
+                output.extend(writer.bytes())
+            return bytes(output)
         else:
             raise EncodeError(f"unsupported repetition type {repeat_type['tag']!r}")
         return prefix + b"".join(
@@ -726,24 +776,19 @@ def decode_message(
         unknown_tail: UnknownTail | None = None
         for frn in present:
             if frn > len(uap):
+                variation.validation_issue(
+                    state,
+                    "unknown-frn",
+                    f"FRN {frn} exceeds the selected UAP",
+                    frn=frn,
+                )
                 unknown_tail = UnknownTail(cursor.take(cursor.remaining), f"FRN {frn} exceeds UAP")
                 break
             entry = uap[frn - 1]
             entry_tag = entry.get("tag")
             if entry_tag != "UapItem":
                 message = f"FRN {frn} maps to {entry_tag}"
-                if context.validation is ValidationMode.STRICT:
-                    raise ValidationError(message)
-                diagnostics.append(
-                    Diagnostic(
-                        "uap-spare",
-                        message,
-                        Severity.WARNING,
-                        category=category,
-                        edition=edition,
-                        frn=frn,
-                    )
-                )
+                variation.validation_issue(state, "uap-spare", message, frn=frn)
                 continue
             name = str(entry["contents"])
             item_start = cursor.pos
